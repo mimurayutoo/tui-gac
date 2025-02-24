@@ -1,15 +1,9 @@
 package model
 
 import (
-	// "log"
-	"log"
 	"strings"
 	"tui-gac/git/add"
 	"tui-gac/git/commit"
-
-	// "tui-gac/git/status"
-
-	// "tui-gac/git/add"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -26,7 +20,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if !m.InputIssueNum.Focused() {
 					m.InputIssueNum.Focus()
 				}
-				// log.Println(m.ProjectConfig)
 				switch msg.String() {
 				case "enter":
 					input := m.InputIssueNum.Value()
@@ -111,7 +104,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "enter":
 				if err := add.AddAll(m.ChangedFiles, m.DeletedFiles); err != nil {
-					log.Printf("Failed to add all files: %v", err)
 					m.IsDone = true
 					return m, tea.Quit
 				}
@@ -125,7 +117,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "enter":
 				if err := add.AddSelectedFile(m.DeletedFiles, m.ChangedFiles, m.AddFile); err != nil {
-					log.Printf("Failed to add selected files: %v", err)
 					m.IsDone = true
 					return m, tea.Quit
 				}
@@ -151,7 +142,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "enter":
 				if err := add.AddSelectedFile(m.DeletedFiles, m.ChangedFiles, m.AddFile); err != nil {
-					log.Printf("Failed to add files: %v", err)
 					m.IsDone = true
 					return m, tea.Quit
 				}
@@ -204,7 +194,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "enter":
 				if err := commit.Commit(m.CommitMessage); err != nil {
-					log.Printf("Failed to commit: %v", err)
 					m.IsDone = true
 					return m, tea.Quit
 				}

@@ -1,7 +1,6 @@
 package model
 
 import (
-	"log"
 	"tui-gac/git/add"
 	"tui-gac/types"
 )
@@ -16,7 +15,6 @@ func (m Model)UpdateJson(projectConfig []types.ProjectInfo, currentDir string, c
 					m.ProjectConfig[i].Branches[j].IssueNumber = m.IssueNum
 					// 更新後すぐにjsonファイルに保存
 					if err := add.SaveProjectConfig(m.ProjectConfig); err != nil {
-						log.Printf("Failed to save config: %v", err)
 					}
 					break
 				}

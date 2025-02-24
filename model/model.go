@@ -1,7 +1,6 @@
 package model
 
 import (
-	"log"
 	"os"
 	"tui-gac/git/add"
 	"tui-gac/git/status"
@@ -52,7 +51,6 @@ type Model struct {
 
 // モデルの初期化
 func InitModel(projectConfig []types.ProjectInfo) Model {
-	log.Printf("ProjectConfig in InitModel: %+v\n", projectConfig)
 	ti := textinput.New()
 	m := Model{
 		Cursor:             0,
@@ -75,7 +73,6 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		StagedFiles:   []string{},
 		CommitMessage: "",
 	}
-	log.Println(m.ProjectConfig)
 	currentBranch, err := add.CheckBranch()
 	if err != nil {
 		return m
@@ -86,11 +83,8 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 	if err != nil {
 		return m
 	}
-	log.Printf("Current Directory: %s\n", m.CurrentDir)
-	log.Printf("Project Paths in JSON: %+v\n", projectConfig)
 
 	m.IsExistDir = add.SearchDir(m.ProjectConfig, m.CurrentDir)
-	log.Printf("Directory exists: %v\n", m.IsExistDir)
 	if !m.IsExistDir {
 		// jsonファイルにプロジェクトを追加する関数を実装。参照ではなく、ポインタを渡す。
 		add.WriteDir(m.CurrentDir, &m.ProjectConfig)
@@ -105,23 +99,17 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		// jsonファイルに現在のブランチを追加する関数を実装。
 		updatedConfig, err := add.WriteBranch(m.CurrentDir, m.CurrentBranch, m.ProjectConfig)
 		if err != nil {
-			log.Printf("Error writing branch: %v\n", err)
 			return m
 		}
 		m.ProjectConfig = updatedConfig
-		log.Printf("Updated ProjectConfig: %+v\n", m.ProjectConfig)
 	} else {
 		m.IssueNum = add.GetIssueNumber(m.ProjectConfig, m.CurrentDir, m.CurrentBranch)
 	}
 	//　 ここに全てのデータを表示してデバックする。
-	log.Printf("Model Data: %+v\n", m)
 	changedFiles, deletedFiles, err := status.GetStatus()
 	if err != nil {
-		log.Printf("Error getting status: %v\n", err)
 		return m
 	}
-	log.Printf("Changed Files: %+v\n", changedFiles)
-	log.Printf("Deleted Files: %+v\n", deletedFiles)
 	m.ChangedFiles = changedFiles
 	m.DeletedFiles = deletedFiles
 	m.AddFile = make([]bool, len(changedFiles))

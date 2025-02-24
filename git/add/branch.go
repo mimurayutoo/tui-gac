@@ -3,7 +3,6 @@ package add
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -15,7 +14,6 @@ func CheckBranch() (string, error) {
 	cmd := exec.Command("git", "branch", "--show-current")
 	out, err := cmd.Output()
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 	currentBranch := strings.TrimSpace(string(out))
@@ -55,15 +53,11 @@ func GetIssueNumber(projectConfig []types.ProjectInfo, currentDir string, curren
 
 // jsonファイルにプロジェクトが存在しているのか確認
 func SearchDir(projectConfig []types.ProjectInfo, currentDir string) bool {
-	log.Printf("SearchDir - Current Directory: %s\n", currentDir)
 	for _, project := range projectConfig {
-		log.Printf("SearchDir - Comparing with Project Path: %s\n", project.ProjectPath)
 		if project.ProjectPath == currentDir {
-			log.Println("SearchDir - Match found!")
 			return true
 		}
 	}
-	log.Println("SearchDir - No match found")
 	return false
 }
 

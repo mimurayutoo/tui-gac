@@ -2,7 +2,6 @@ package add
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 )
 
@@ -14,7 +13,6 @@ func AddSelectedFile(deletedFiles []string, changedFiles []string, addFile []boo
 	// まずchangedFilesの処理
 	for i, add := range addFile {
 		if add {
-			log.Printf("Adding file: %s", changedFiles[i])
 			cmd := exec.Command("git", "add", changedFiles[i])
 			_, err := cmd.Output()
 			if err != nil {
