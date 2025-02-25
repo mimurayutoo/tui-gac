@@ -113,6 +113,11 @@ func (m Model) View() string {
 		s.WriteString(styles.SubtitleStyle.Render("以下の内容でpushします") + "\n\n")
 		s.WriteString(styles.StatusStyle.Render("コミットメッセージ: "+m.CommitMessage) + "\n")
 		s.WriteString(styles.HelpStyle.Render("• Enter: プッシュ\n• Ctrl+C: 終了"))
+
+	case Error:
+		s.WriteString(styles.SubtitleStyle.Render("エラーが発生しました") + "\n\n")
+		s.WriteString(styles.ErrorStyle.Render(m.ErrorMsg) + "\n\n")
+		s.WriteString(styles.HelpStyle.Render("• r: リトライ\n• q/Ctrl+C: 終了"))
 	}
 
 	return styles.BaseStyle.Render(s.String())
