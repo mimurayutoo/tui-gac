@@ -13,6 +13,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch m.CurrentState {
 		case GetBranch:
+			if m.ChangedFiles == nil {
+				return m, tea.Quit
+			}
 			if m.CurrentBranch == "" {
 				return m, tea.Quit
 			}
