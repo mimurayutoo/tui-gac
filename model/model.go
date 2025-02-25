@@ -13,8 +13,9 @@ type state int
 
 const (
 	GetBranch state = iota
-	CheckBranchInfo
-	ChangeIssueNumber
+	InputIssueNum
+	CheckBranchAndIssueNum
+	FixIssueNumber
 	AddAllOrSelect
 	Add
 	AddAll
@@ -63,12 +64,12 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		InputIssueNum:      ti,
 		InputCommitMessage: ti,
 		FixOverView: []string{
-			"fix",
-			"add",
-			"update",
-			"refactor",
-			"style",
-			"remove",
+			"FIX",
+			"ADD",
+			"UPDATE",
+			"REFACTOR",
+			"STYLE",
+			"REMOVE",
 		},
 		StagedFiles:   []string{},
 		CommitMessage: "",
@@ -105,7 +106,7 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 	} else {
 		m.IssueNum = add.GetIssueNumber(m.ProjectConfig, m.CurrentDir, m.CurrentBranch)
 	}
-	//　 ここに全てのデータを表示してデバックする。
+
 	changedFiles, deletedFiles, err := status.GetStatus()
 	if err != nil {
 		return m

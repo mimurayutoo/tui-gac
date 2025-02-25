@@ -1,134 +1,119 @@
 package model
 
 import (
-	"github.com/charmbracelet/lipgloss"
-)
-
-var (
-	titleStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(lipgloss.Color("#00FF00")).
-			MarginBottom(1)
-
-	branchStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FF00FF")).
-			PaddingLeft(2)
-
-	issueStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#00FFFF")).
-			PaddingLeft(2)
-
-	inputStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFFF00")).
-			PaddingLeft(2)
-
-	itemStyle = lipgloss.NewStyle().
-			PaddingLeft(4).
-			Foreground(lipgloss.Color("#FFFFFF"))
-
-	selectedStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#00FF00")).
-			Bold(true).
-			Background(lipgloss.Color("#333333"))
-
-	helpStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#888888")).
-			Italic(true).
-			MarginTop(1)
-
-	subtitleStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#00FFFF")).
-			Bold(true).
-			MarginTop(1).
-			MarginBottom(1)
+	"strings"
+	"tui-gac/model/styles"
 )
 
 func (m Model) View() string {
-	message := ""
-	if m.IsDone {
-		return "Goodbye! 👋\n"
-	}
+	var s strings.Builder
 
+	// ヘッダー部分
+	s.WriteString(styles.TitleStyle.Render("🛠  Git Commit Assistant") + "\n")
+	s.WriteString(styles.BranchStyle.Render("Branch: "+m.CurrentBranch) + "\n\n")
+
+	// メインコンテンツ
 	switch m.CurrentState {
 	case GetBranch:
-		message += titleStyle.Render("🌳 Branch Information") + "\n"
-		message += branchStyle.Render("Branch: "+m.CurrentBranch) + "\n"
 		if m.IssueNum == "" {
-			message += inputStyle.Render("Issue Number: ") + m.InputIssueNum.View() + "\n"
-			message += helpStyle.Render("Enter issue number and press Enter")
+			s.WriteString(styles.SubtitleStyle.Render("Issue番号の入力") + "\n")
+			s.WriteString(styles.InputStyle.Render(m.InputIssueNum.View()) + "\n\n")
+			s.WriteString(styles.HelpStyle.Render("• Enter: 確定\n• Ctrl+C: 終了"))
 		} else {
-			message += issueStyle.Render("Issue: "+m.IssueNum) + "\n"
-			message += helpStyle.Render("Press Enter to continue")
+			s.WriteString(styles.StatusStyle.Render("✓ Issue: "+m.IssueNum) + "\n\n")
+			s.WriteString(styles.HelpStyle.Render("• Enter: 次へ\n• c: Issue番号を修正\n• Ctrl+C: 終了"))
 		}
 
-	case CheckBranchInfo:
-		message += titleStyle.Render("✓ Confirmation") + "\n"
-		message += branchStyle.Render("Branch: "+m.CurrentBranch) + "\n"
-		message += issueStyle.Render("Issue: "+m.IssueNum) + "\n"
-		message += helpStyle.Render("Press Enter to select files or enter c to change issue number")
+	case CheckBranchAndIssueNum:
+		s.WriteString(styles.SubtitleStyle.Render("ブランチ情報の確認") + "\n\n")
+		s.WriteString(styles.StatusStyle.Render("Branch: "+m.CurrentBranch) + "\n")
+		s.WriteString(styles.StatusStyle.Render("Issue: "+m.IssueNum) + "\n\n")
+		s.WriteString(styles.HelpStyle.Render("• Enter: 次へ\n• c: Issue番号を修正\n• Ctrl+C: 終了"))
 
-	case ChangeIssueNumber:
-		message += titleStyle.Render("🔄 Change Issue Number") + "\n"
-		message += inputStyle.Render("Issue Number: ") + m.InputIssueNum.View() + "\n"
-		message += helpStyle.Render("Enter issue number and press Enter")
+	case FixIssueNumber:
+		s.WriteString(styles.SubtitleStyle.Render("Issue番号の修正") + "\n\n")
+		s.WriteString(styles.InputStyle.Render(m.InputIssueNum.View()) + "\n\n")
+		s.WriteString(styles.HelpStyle.Render("• Enter: 確定\n• Ctrl+C: 終了"))
+
+	case InputIssueNum:
+		s.WriteString(styles.SubtitleStyle.Render("Issue番号の入力") + "\n")
+		s.WriteString(styles.InputStyle.Render(m.InputIssueNum.View()) + "\n\n")
+		s.WriteString(styles.HelpStyle.Render("• Enter: 確定\n• Ctrl+C: 終了"))
 
 	case AddAllOrSelect:
-		message += titleStyle.Render("📁 Select Files") + "\n"
-		message += helpStyle.Render("y: add all • n: add selected files")
+		s.WriteString(styles.SubtitleStyle.Render("ステージングするファイルの選択") + "\n\n")
+
+		if len(m.ChangedFiles) > 0 {
+			s.WriteString(styles.ItemStyle.Render("変更されたファイル:") + "\n")
+			for _, file := range m.ChangedFiles {
+				s.WriteString(styles.ItemStyle.Render("  • "+file) + "\n")
+			}
+		}
+
+		if len(m.DeletedFiles) > 0 {
+			if len(m.ChangedFiles) > 0 {
+				s.WriteString("\n")
+			}
+			s.WriteString(styles.WarningStyle.Render("削除されたファイル:") + "\n")
+			for _, file := range m.DeletedFiles {
+				s.WriteString(styles.WarningStyle.Render("  • "+file) + "\n")
+			}
+		}
+		if len(m.ChangedFiles) > 0 || len(m.DeletedFiles) > 0 {
+			s.WriteString("\n" + styles.HelpStyle.Render("• y: 全てのファイルを追加\n• n: 個別に選択\n• Ctrl+C: 終了"))
+		}
 
 	case AddSelectedFiles:
-		message += titleStyle.Render("📁 Select Files") + "\n"
+		s.WriteString(styles.SubtitleStyle.Render("ファイルの選択") + "\n\n")
 		for i, file := range m.ChangedFiles {
-			cursor := "×"
-			if m.AddFile[i] {
-				cursor = "✓"
-			}
-			style := itemStyle
+			prefix := "   "
 			if i == m.Cursor {
-				style = style.Inherit(selectedStyle)
+				prefix = " ➜ "
 			}
-			message += style.Render(cursor+" "+file) + "\n"
+			style := styles.ItemStyle
+			if i == m.Cursor {
+				style = style.Inherit(styles.SelectedStyle)
+			}
+			status := " "
+			if m.AddFile[i] {
+				status = "✓"
+			}
+			s.WriteString(style.Render(prefix+status+" "+file) + "\n")
 		}
-		message += helpStyle.Render("↑/↓: move • y: select • n: deselect • Enter: continue")
+		s.WriteString("\n" + styles.HelpStyle.Render("• ↑/↓: 移動\n• y: 選択\n• n: 選択解除\n• Enter: 確定"))
 
 	case SelectFixOverView:
-		message += titleStyle.Render("📝 Commit Overview") + "\n\n"
-
-		// Staged Files Section
-		message += subtitleStyle.Render("Staged Files:") + "\n"
-		if len(m.DeletedFiles) == 0 && len(m.ChangedFiles) == 0 {
-			message += itemStyle.Render("No files staged") + "\n"
-		} else {
-			if len(m.ChangedFiles) > 0 {
-				for _, file := range m.ChangedFiles {
-					message += itemStyle.Render("✓ "+file) + "\n"
-				}
-			}
-			if len(m.DeletedFiles) > 0 {
-				for _, file := range m.DeletedFiles {
-					message += itemStyle.Render("✗ "+file) + "\n"
-				}
-			}
-		}
-		message += "\n"
-
-		// Fix Overview Section
-		message += subtitleStyle.Render("Select Commit Type:") + "\n"
-		for i, fixOverview := range m.FixOverView {
-			style := itemStyle
+		s.WriteString(styles.SubtitleStyle.Render("コミットタイプの選択") + "\n\n")
+		for i, fix := range m.FixOverView {
+			prefix := "   "
 			if i == m.Cursor {
-				style = style.Inherit(selectedStyle)
+				prefix = " ➜ "
 			}
-			message += style.Render("• "+fixOverview) + "\n"
+			style := styles.ItemStyle
+			if i == m.Cursor {
+				style = style.Inherit(styles.SelectedStyle)
+			}
+			s.WriteString(style.Render(prefix+fix) + "\n")
 		}
-		message += "\n"
-		message += helpStyle.Render("↑/↓: move • Enter: select commit type")
+		s.WriteString("\n" + styles.HelpStyle.Render("• ↑/↓: 移動\n• Enter: 選択"))
 
 	case InputCommitMessage:
-		message += titleStyle.Render("📝 Commit Message") + "\n\n"
-		message += inputStyle.Render("Commit Message: ") + m.InputCommitMessage.View() + "\n"
-		message += helpStyle.Render("Enter commit message and press Enter")
+		s.WriteString(styles.SubtitleStyle.Render("コミットメッセージの入力") + "\n\n")
+		s.WriteString(styles.StatusStyle.Render("Issue: "+m.IssueNum) + "\n")
+		s.WriteString(styles.StatusStyle.Render("Type: "+m.FixOverView[m.Cursor]) + "\n\n")
+		s.WriteString(styles.InputStyle.Render("Message: "+m.InputCommitMessage.View()) + "\n\n")
+		s.WriteString(styles.HelpStyle.Render("• Enter: 確定\n• Ctrl+C: 終了"))
+
+	case Commit:
+		s.WriteString(styles.SubtitleStyle.Render("コミットメッセージの確認") + "\n\n")
+		s.WriteString(styles.StatusStyle.Render("コミットメッセージ: "+m.CommitMessage) + "\n\n")
+		s.WriteString(styles.HelpStyle.Render("• Enter: コミットを実行\n• Ctrl+C: キャンセル"))
+
+	case Push:
+		s.WriteString(styles.SubtitleStyle.Render("以下の内容でpushします") + "\n\n")
+		s.WriteString(styles.StatusStyle.Render("コミットメッセージ: "+m.CommitMessage) + "\n")
+		s.WriteString(styles.HelpStyle.Render("• Enter: プッシュ\n• Ctrl+C: 終了"))
 	}
 
-	return message
+	return styles.BaseStyle.Render(s.String())
 }

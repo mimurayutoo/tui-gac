@@ -5,6 +5,8 @@ import (
 	"tui-gac/git/add"
 	"tui-gac/git/commit"
 
+	"tui-gac/git/push"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -20,28 +22,35 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			}
 			if m.IssueNum == "" {
-				if !m.InputIssueNum.Focused() {
-					m.InputIssueNum.Focus()
-				}
-				switch msg.String() {
-				case "enter":
-					input := m.InputIssueNum.Value()
-					if input != "" {
-						// "#"がない場合は追加
-						if !strings.HasPrefix(input, "#") {
-							input = "#" + input
-						}
-						m.IssueNum = input
-						m.InputIssueNum.Reset()
-						m.InputIssueNum.Blur()
-						m.UpdateJson(m.ProjectConfig, m.CurrentDir, m.CurrentBranch, m.IssueNum)
-					}
-				}
+				m.CurrentState = InputIssueNum
 			}
 			if m.IssueNum != "" && m.CurrentState == GetBranch {
-				m.CurrentState = CheckBranchInfo
+				m.CurrentState = FixIssueNumber
 			}
 			switch msg.String() {
+			case "ctrl+c", "q":
+				m.IsDone = true
+				return m, tea.Quit
+			case "enter":
+				m.CurrentState = CheckBranchAndIssueNum
+			case "c":
+				m.CurrentState = FixIssueNumber
+			}
+
+		case InputIssueNum:
+			if !m.InputIssueNum.Focused() {
+				m.InputIssueNum.Focus()
+			}
+			switch msg.String() {
+			case "enter":
+				input := m.InputIssueNum.Value()
+				if input != "" {
+					m.IssueNum = input
+					m.InputIssueNum.Reset()
+					m.InputIssueNum.Blur()
+					m.UpdateJson(m.ProjectConfig, m.CurrentDir, m.CurrentBranch, m.IssueNum)
+					m.CurrentState = CheckBranchAndIssueNum
+				}
 			case "ctrl+c", "q":
 				m.IsDone = true
 				return m, tea.Quit
@@ -50,7 +59,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.InputIssueNum, cmd = m.InputIssueNum.Update(msg)
 			return m, cmd
 
-		case CheckBranchInfo:
+		case CheckBranchAndIssueNum:
 			switch msg.String() {
 			case "enter":
 				m.CurrentState = AddAllOrSelect
@@ -58,10 +67,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.IsDone = true
 				return m, tea.Quit
 			case "c":
-				m.CurrentState = ChangeIssueNumber
+				m.CurrentState = FixIssueNumber
 			}
 
-		case ChangeIssueNumber:
+		case FixIssueNumber:
 			switch msg.String() {
 			case "enter":
 				input := m.InputIssueNum.Value()
@@ -90,9 +99,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case AddAllOrSelect:
 			switch msg.String() {
 			case "y":
-				m.CurrentState = AddAll
+				if err := add.AddAll(m.ChangedFiles, m.DeletedFiles); err != nil {
+					m.IsDone = true
+					return m, tea.Quit
+				}
+				m.CurrentState = SelectFixOverView
 			case "n":
-				// 全てのファイルを追加
+				// 全てのファイルを追加するように初期化
 				for i := range m.AddFile {
 					m.AddFile[i] = true
 				}
@@ -106,10 +119,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case AddAll:
 			switch msg.String() {
 			case "enter":
-				if err := add.AddAll(m.ChangedFiles, m.DeletedFiles); err != nil {
-					m.IsDone = true
-					return m, tea.Quit
-				}
 				m.CurrentState = InputCommitMessage
 			case "ctrl+c", "q":
 				m.IsDone = true
@@ -165,23 +174,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.Cursor++
 				}
 			case "enter":
-				m.CommitMessage += m.IssueNum + " " + m.FixOverView[m.Cursor]
+				// 修正の概要を保存
+				m.CommitMessage = m.IssueNum + " " + m.FixOverView[m.Cursor]
+
 				m.CurrentState = InputCommitMessage
 			case "ctrl+c", "q":
 				m.IsDone = true
 				return m, tea.Quit
 			}
+
 		case InputCommitMessage:
 			switch msg.String() {
 			case "enter":
 				input := m.InputCommitMessage.Value()
 				if input != "" {
-					m.CommitMessage += " " + input
+					// ユーザーの入力を追加
+					m.CommitMessage = m.CommitMessage + " " + input
 					m.InputCommitMessage.Reset()
 					m.InputCommitMessage.Blur()
 					m.CurrentState = Commit
 				}
-				m.CurrentState = Commit
 			case "ctrl+c", "q":
 				m.IsDone = true
 				return m, tea.Quit
@@ -196,6 +208,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Commit:
 			switch msg.String() {
 			case "enter":
+
 				if err := commit.Commit(m.CommitMessage); err != nil {
 					m.IsDone = true
 					return m, tea.Quit
@@ -208,7 +221,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Push:
 			switch msg.String() {
 			case "enter":
-				m.CurrentState = Push
+
+				if err := push.Push(m.CurrentBranch); err != nil {
+					m.IsDone = true
+					return m, tea.Quit
+				}
+				m.IsDone = true
+				return m, tea.Quit
 			case "ctrl+c", "q":
 				m.IsDone = true
 				return m, tea.Quit

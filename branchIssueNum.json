@@ -1,24 +1,2 @@
 [
-    {
-        "ProjectPath": "/absolute/path/to/your/project",
-        "Branches": [
-            {
-                "BranchName": "feature/add",
-                "IssueNumber": "#123"
-            }
-        ]
-    },
-    {
-        "ProjectPath": "/Users/mimurayuto/programming/dev/Go/tui-gac",
-        "Branches": [
-            {
-                "BranchName": "hoge",
-                "IssueNumber": "#333"
-            },
-            {
-                "BranchName": "fuga",
-                "IssueNumber": "#4"
-            }
-        ]
-    }
 ]
