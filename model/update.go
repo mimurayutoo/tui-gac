@@ -222,7 +222,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					if resetErr := reset.ResetLastCommit(); resetErr != nil {
 						m.ErrorMsg += "\nコミットの取り消しにも失敗しました: " + resetErr.Error()
 					}
-					m.CurrentState = Error
+					m.CurrentState = Push
 					return m, nil
 				}
 				m.CurrentState = Push
