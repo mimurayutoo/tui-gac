@@ -83,7 +83,6 @@ func (m Model) View() string {
 		}
 		s.WriteString("\n" + styles.HelpStyle.Render("• ↑/↓: Navigate\n• y: Select\n• n: Deselect\n• Enter: Confirm"))
 
-		
 	case SelectFixOverView:
 		s.WriteString(styles.SubtitleStyle.Render("📋 Select Commit Type") + "\n\n")
 		for i, fix := range m.FixOverView {

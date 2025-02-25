@@ -5,6 +5,10 @@
             {
                 "BranchName": "fuga",
                 "IssueNumber": "#2"
+            },
+            {
+                "BranchName": "test",
+                "IssueNumber": "#3"
             }
         ]
     }

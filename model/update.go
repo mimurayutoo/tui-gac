@@ -45,6 +45,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "enter":
 				input := m.InputIssueNum.Value()
 				if input != "" {
+					// #で始まる場合はそのまま、そうでない場合は#を追加
+					if !strings.HasPrefix(input, "#") {
+						input = "#" + input
+					}
 					m.IssueNum = input
 					m.InputIssueNum.Reset()
 					m.InputIssueNum.Blur()

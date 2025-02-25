@@ -130,6 +130,7 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		// ブランチが存在していない場合にはissue番号も存在していない。
 		m.IssueNum = ""
 		m.IsExistIssueNum = false
+		m.CurrentState = InputIssueNum
 		// jsonファイルに現在のブランチを追加する関数を実装。
 		updatedConfig, err := add.WriteBranch(m.CurrentDir, m.CurrentBranch, m.ProjectConfig)
 		if err != nil {
