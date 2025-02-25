@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strings"
 	"tui-gac/model/styles"
 )
@@ -93,15 +94,15 @@ func (m Model) View() string {
 			if i == m.Cursor {
 				style = style.Inherit(styles.SelectedStyle)
 			}
-			icon := getCommitTypeIcon(fix)
-			s.WriteString(style.Render(prefix+icon+" "+fix) + "\n")
+			commitInfo := fmt.Sprintf("%s %s - %s", fix.Icon, fix.Label, fix.Desc)
+			s.WriteString(style.Render(prefix+commitInfo) + "\n")
 		}
 		s.WriteString("\n" + styles.HelpStyle.Render("• ↑/↓: Navigate\n• Enter: Select"))
 
 	case InputCommitMessage:
 		s.WriteString(styles.SubtitleStyle.Render("✍️  Enter Commit Message") + "\n\n")
 		s.WriteString(styles.StatusStyle.Render("Issue: "+m.IssueNum) + "\n")
-		s.WriteString(styles.StatusStyle.Render("Type: "+m.FixOverView[m.Cursor]) + "\n\n")
+		s.WriteString(styles.StatusStyle.Render("Type: "+m.FixOverView[m.Cursor].Icon+" "+m.FixOverView[m.Cursor].Label) + "\n\n")
 		s.WriteString(styles.InputStyle.Render("Message: "+m.InputCommitMessage.View()) + "\n\n")
 		s.WriteString(styles.HelpStyle.Render("• Enter: Confirm\n• Ctrl+C: Exit"))
 
@@ -125,21 +126,21 @@ func (m Model) View() string {
 }
 
 // コミットタイプに応じたアイコンを返す補助関数
-func getCommitTypeIcon(commitType string) string {
-	switch commitType {
-	case "FIX":
-		return "🔧"
-	case "ADD":
-		return "✨"
-	case "UPDATE":
-		return "⚡"
-	case "REFACTOR":
-		return "♻️"
-	case "STYLE":
-		return "💄"
-	case "REMOVE":
-		return "🗑️"
-	default:
-		return "📝"
-	}
-}
+// func getCommitTypeIcon(commitType string) string {
+// 	switch commitType {
+// 	case "FIX":
+// 		return "🔧"
+// 	case "ADD":
+// 		return "✨"
+// 	case "UPDATE":
+// 		return "⚡"
+// 	case "REFACTOR":
+// 		return "♻️"
+// 	case "STYLE":
+// 		return "💄"
+// 	case "REMOVE":
+// 		return "🗑️"
+// 	default:
+// 		return "📝"
+// 	}
+// }

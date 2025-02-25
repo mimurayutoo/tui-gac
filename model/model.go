@@ -27,6 +27,12 @@ const (
 	Error
 )
 
+type CommitType struct {
+	Label string
+	Icon  string
+	Desc  string
+}
+
 // それぞれのフィールドを大文字にして外部からのアクセスができるようにして
 type Model struct {
 	Cursor             int
@@ -44,7 +50,7 @@ type Model struct {
 	IsExistBranch      bool
 	IsExistIssueNum    bool
 	CurrentDir         string
-	FixOverView        []string
+	FixOverView        []CommitType
 	AddFile            []bool
 	UserIntention      bool
 	StagedFiles        []string
@@ -66,13 +72,37 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		IssueNum:           "",
 		InputIssueNum:      ti,
 		InputCommitMessage: ti,
-		FixOverView: []string{
-			"FIX",
-			"ADD",
-			"UPDATE",
-			"REFACTOR",
-			"STYLE",
-			"REMOVE",
+		FixOverView: []CommitType{
+			{
+				Label: "FIX",
+				Icon:  "🔧",
+				Desc:  "Bug fixes and patches",
+			},
+			{
+				Label: "ADD",
+				Icon:  "✨",
+				Desc:  "New features and additions",
+			},
+			{
+				Label: "UPDATE",
+				Icon:  "⚡",
+				Desc:  "Updates and improvements",
+			},
+			{
+				Label: "REFACTOR",
+				Icon:  "♻️",
+				Desc:  "Code refactoring",
+			},
+			{
+				Label: "STYLE",
+				Icon:  "💄",
+				Desc:  "Style and formatting",
+			},
+			{
+				Label: "REMOVE",
+				Icon:  "🗑️",
+				Desc:  "Removing code or files",
+			},
 		},
 		StagedFiles:   []string{},
 		CommitMessage: "",

@@ -184,15 +184,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.Cursor++
 				}
 			case "enter":
-				// 修正の概要を保存
-				m.CommitMessage = m.IssueNum + " " + m.FixOverView[m.Cursor]
-
+				// 修正の概要を保存（アイコンを含める）
+				m.CommitMessage = m.IssueNum + " " + m.FixOverView[m.Cursor].Icon + " " + m.FixOverView[m.Cursor].Label
 				m.CurrentState = InputCommitMessage
 			case "ctrl+c", "q":
 				m.IsDone = true
 				return m, tea.Quit
 			}
-
 		case InputCommitMessage:
 			switch msg.String() {
 			case "enter":
