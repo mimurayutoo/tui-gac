@@ -3,61 +3,87 @@ package styles
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	// 基本色の定義
-	subtle    = lipgloss.AdaptiveColor{Light: "#666666", Dark: "#999999"}
-	highlight = lipgloss.AdaptiveColor{Light: "#2AC3DE", Dark: "#89DCEB"} // 爽やかな水色
-	special   = lipgloss.AdaptiveColor{Light: "#40A02B", Dark: "#A6E3A1"} // 明るい緑
-	warning   = lipgloss.AdaptiveColor{Light: "#FE640B", Dark: "#FFA066"} // オレンジ
+	// モダンでクリーンな配色定義
+	subtle    = lipgloss.AdaptiveColor{Light: "#767C9DB2", Dark: "#A1AACDB2"} // よりソフトなグレー
+	highlight = lipgloss.AdaptiveColor{Light: "#0EA5E9", Dark: "#38BDF8"}     // 明るい青
+	special   = lipgloss.AdaptiveColor{Light: "#10B981", Dark: "#34D399"}     // 鮮やかな緑
+	warning   = lipgloss.AdaptiveColor{Light: "#F59E0B", Dark: "#FBBF24"}     // 温かみのあるオレンジ
+	error     = lipgloss.AdaptiveColor{Light: "#EF4444", Dark: "#F87171"}     // 目立つ赤
 
-	// Base style - 最小限の余白
+	// Base style - クリーンな余白
 	BaseStyle = lipgloss.NewStyle().
-			PaddingLeft(1)
+			PaddingLeft(2).
+			PaddingRight(2)
 
-	// Title style - 爽やかな印象に
+	// Title style - 大きく目立つヘッダー
 	TitleStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.Color("#2AC3DE")). // 鮮やかな水色
-			PaddingBottom(1)
+			Foreground(highlight).
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderBottom(true).
+			MarginBottom(1).
+			PaddingLeft(2).
+			PaddingRight(2)
 
-	// Branch style - 緑で安定感を表現
+	// Branch style - 目立つが控えめな表示
 	BranchStyle = lipgloss.NewStyle().
 			Foreground(special).
-			PaddingLeft(2)
+			PaddingLeft(2).
+			MarginBottom(1)
 
-	// Input style - 水色で視認性を確保
+	// Input style - 入力欄を強調
 	InputStyle = lipgloss.NewStyle().
 			Foreground(highlight).
-			PaddingLeft(2)
+			PaddingLeft(4).
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderLeft(true)
 
-	// Item style - 通常のテキスト
+	// Item style - 整理されたリスト表示
 	ItemStyle = lipgloss.NewStyle().
-			PaddingLeft(4)
+			PaddingLeft(4).
+			Foreground(lipgloss.AdaptiveColor{Light: "#334155", Dark: "#CBD5E1"})
 
-	// Selected style - 選択項目を水色で強調
+	// Selected style - 選択項目を明確に
 	SelectedStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(highlight)
+			Foreground(highlight).
+			Background(lipgloss.AdaptiveColor{Light: "#E0F2FE", Dark: "#0C4A6E"})
 
-	// Help style - 控えめなグレー
+	// Help style - 読みやすいヘルプテキスト
 	HelpStyle = lipgloss.NewStyle().
 			Foreground(subtle).
-			Italic(true)
+			Italic(true).
+			PaddingTop(1).
+			PaddingBottom(1)
 
-	// Status style - 成功を表す緑
+	// Status style - 成功状態の表示
 	StatusStyle = lipgloss.NewStyle().
-			Foreground(special)
+			Foreground(special).
+			PaddingLeft(4).
+			Bold(true)
 
-	// Warning style - 警告を表すオレンジ
+	// Warning style - 警告の表示
 	WarningStyle = lipgloss.NewStyle().
-			Foreground(warning)
+			Foreground(warning).
+			PaddingLeft(4).
+			Bold(true)
 
-	// Error style - エラーを表す赤
+	// Error style - エラーメッセージ
 	ErrorStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#E64553"))
+			Foreground(error).
+			Bold(true).
+			PaddingLeft(4).
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderLeft(true).
+			BorderForeground(error)
 
-	// Subtitle style - 水色でセクションを区切り
+	// Subtitle style - セクションタイトル
 	SubtitleStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(highlight).
-			PaddingBottom(1)
+			PaddingBottom(1).
+			PaddingLeft(2).
+			MarginTop(1).
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderLeft(true)
 )

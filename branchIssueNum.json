@@ -4,7 +4,7 @@
         "Branches": [
             {
                 "BranchName": "fuga",
-                "IssueNumber": "666"
+                "IssueNumber": "#12"
             }
         ]
     }
