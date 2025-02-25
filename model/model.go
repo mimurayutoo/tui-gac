@@ -24,6 +24,7 @@ const (
 	InputCommitMessage
 	Commit
 	Push
+	Error
 )
 
 // それぞれのフィールドを大文字にして外部からのアクセスができるようにして
@@ -48,6 +49,8 @@ type Model struct {
 	UserIntention      bool
 	StagedFiles        []string
 	CommitMessage      string
+	ErrorMsg           string
+	PreviousState      state // エラー発生前の状態を保存
 }
 
 // モデルの初期化

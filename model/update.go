@@ -4,8 +4,8 @@ import (
 	"strings"
 	"tui-gac/git/add"
 	"tui-gac/git/commit"
-
 	"tui-gac/git/push"
+	"tui-gac/git/reset"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -100,8 +100,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "y":
 				if err := add.AddAll(m.ChangedFiles, m.DeletedFiles); err != nil {
-					m.IsDone = true
-					return m, tea.Quit
+					m.ErrorMsg = "ファイルのステージングに失敗しました: " + err.Error()
+					// ステージングの取り消し
+					if resetErr := reset.ResetStaging(); resetErr != nil {
+						m.ErrorMsg += "\nステージングの取り消しにも失敗しました: " + resetErr.Error()
+					}
+					m.CurrentState = Error
+					return m, nil
 				}
 				m.CurrentState = SelectFixOverView
 			case "n":
@@ -129,8 +134,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "enter":
 				if err := add.AddSelectedFile(m.DeletedFiles, m.ChangedFiles, m.AddFile); err != nil {
-					m.IsDone = true
-					return m, tea.Quit
+					m.ErrorMsg = "選択したファイルのステージングに失敗しました: " + err.Error()
+					// ステージングの取り消し
+					if resetErr := reset.ResetStaging(); resetErr != nil {
+						m.ErrorMsg += "\nステージングの取り消しにも失敗しました: " + resetErr.Error()
+					}
+					m.CurrentState = Error
+					return m, nil
 				}
 				m.CurrentState = SelectFixOverView
 			case "ctrl+c", "q":
@@ -208,10 +218,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Commit:
 			switch msg.String() {
 			case "enter":
-
 				if err := commit.Commit(m.CommitMessage); err != nil {
-					m.IsDone = true
-					return m, tea.Quit
+					m.ErrorMsg = "コミットに失敗しました: " + err.Error()
+					// コミットの取り消し
+					if resetErr := reset.ResetLastCommit(); resetErr != nil {
+						m.ErrorMsg += "\nコミットの取り消しにも失敗しました: " + resetErr.Error()
+					}
+					m.CurrentState = Error
+					return m, nil
 				}
 				m.CurrentState = Push
 			case "ctrl+c", "q":
@@ -221,14 +235,33 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Push:
 			switch msg.String() {
 			case "enter":
-
 				if err := push.Push(m.CurrentBranch); err != nil {
-					m.IsDone = true
-					return m, tea.Quit
+					m.ErrorMsg = "プッシュに失敗しました: " + err.Error()
+					m.CurrentState = Error
+					return m, nil
 				}
 				m.IsDone = true
 				return m, tea.Quit
 			case "ctrl+c", "q":
+				m.IsDone = true
+				return m, tea.Quit
+			}
+		case Error:
+			switch msg.String() {
+			case "r": // リトライ
+				switch m.PreviousState {
+				case AddAllOrSelect, AddSelectedFiles:
+					if err := reset.ResetStaging(); err == nil {
+						m.CurrentState = m.PreviousState
+					}
+				case Commit:
+					if err := reset.ResetLastCommit(); err == nil {
+						m.CurrentState = m.PreviousState
+					}
+				case Push:
+					m.CurrentState = m.PreviousState
+				}
+			case "q", "ctrl+c":
 				m.IsDone = true
 				return m, tea.Quit
 			}
