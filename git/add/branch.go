@@ -10,6 +10,7 @@ import (
 	"tui-gac/types"
 )
 
+
 // CheckBranch 現在のブランチを取得
 func CheckBranch() (string, error) {
 	cmd := exec.Command("git", "branch", "--show-current")
