@@ -5,31 +5,38 @@ import (
 	"os/exec"
 )
 
-func Reset() error {
-	cmd := exec.Command("git", "reset", "--mixed", "HEAD~1")
-
-	_, err := cmd.Output()
-	if err != nil {
-		return fmt.Errorf("failed to reset: %w", err)
+// ResetStaging ステージングされた変更を取り消す
+func ResetStaging() error {
+	cmd := exec.Command("git", "reset", "HEAD", ".")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to reset staging: %w\nOutput: %s", err, string(output))
 	}
 	return nil
 }
 
-
-// ResetStaging はステージングされた変更を取り消します
-func ResetStaging() error {
-	cmd := exec.Command("git", "reset")
-	return cmd.Run()
-}
-
-// ResetLastCommit は最後のコミットを取り消します
+// ResetLastCommit 最後のコミットを取り消す
 func ResetLastCommit() error {
 	cmd := exec.Command("git", "reset", "--soft", "HEAD^")
-	return cmd.Run()
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to reset last commit: %w\nOutput: %s", err, string(output))
+	}
+	return nil
 }
 
-// ResetHard は全ての変更を破棄します（注意: 取り消せない操作です）
-func ResetHard() error {
-	cmd := exec.Command("git", "reset", "--hard", "HEAD")
-	return cmd.Run()
+// ResetAdd ステージングエリアの変更を取り消す
+func ResetAdd() error {
+	cmd := exec.Command("git", "reset", "HEAD", ".")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to reset add: %w\nOutput: %s", err, string(output))
+	}
+	return nil
+}
+
+// ResetCommit 直前のコミットを取り消す
+func ResetCommit() error {
+	cmd := exec.Command("git", "reset", "--soft", "HEAD~1")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to reset commit: %w\nOutput: %s", err, string(output))
+	}
+	return nil
 }

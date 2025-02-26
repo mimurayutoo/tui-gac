@@ -5,6 +5,7 @@ import (
 	"os/exec"
 )
 
+// ユーザーが入力したメッセージを使用してコミットする。
 func Commit(commitMessage string) error {
 	cmd := exec.Command("git", "commit", "-m", commitMessage)
 	_, err := cmd.Output()
