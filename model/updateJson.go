@@ -5,8 +5,7 @@ import (
 	"tui-gac/types"
 )
 
-
-func (m Model)UpdateJson(projectConfig []types.ProjectInfo, currentDir string, currentBranch string, issueNum string) ([]types.ProjectInfo, error) {
+func (m Model) UpdateJson(projectConfig []types.ProjectInfo, currentDir string, currentBranch string, issueNum string) ([]types.ProjectInfo, error) {
 	// スライスへのissue番号の追加
 	for i := range m.ProjectConfig {
 		if m.ProjectConfig[i].ProjectPath == m.CurrentDir {
