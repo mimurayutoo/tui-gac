@@ -75,7 +75,7 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		FixOverView: []CommitType{
 			{
 				Label: "FIX",
-				Icon:  "🔧",
+				Icon:  "🛠️",
 				Desc:  "Bug fixes and patches",
 			},
 			{
@@ -95,13 +95,18 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 			},
 			{
 				Label: "STYLE",
-				Icon:  "💄",
+				Icon:  "🎨",
 				Desc:  "Style and formatting",
 			},
 			{
 				Label: "REMOVE",
 				Icon:  "🗑️",
 				Desc:  "Removing code or files",
+			},
+			{
+				Label: "REVIEW_FIX",
+				Icon:  "📝",
+				Desc:  "Fixes based on code review",
 			},
 		},
 		StagedFiles:   []string{},
