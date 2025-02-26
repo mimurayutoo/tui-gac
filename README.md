@@ -23,6 +23,9 @@
 ## 操作方法
 操作方法に関してはツールのターミナルに表示してあるのでそれを確認しながら入力を行ってほしい。
 
+https://github.com/user-attachments/assets/9cf0b920-435c-4f01-bfdf-f99501ca15c6
+
+本ツールを使用してpushした際のコミット履歴のイメージ
 
 <img width="1216" alt="Image" src="https://github.com/user-attachments/assets/cdc69605-90b2-4b76-b4a4-7a17df60841d" />
 
