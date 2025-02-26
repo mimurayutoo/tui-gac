@@ -10,4 +10,3 @@ func Push(currentBranch string) error {
 	}
 	return nil
 }
-

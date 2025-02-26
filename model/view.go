@@ -124,23 +124,3 @@ func (m Model) View() string {
 
 	return styles.BaseStyle.Render(s.String())
 }
-
-// コミットタイプに応じたアイコンを返す補助関数
-// func getCommitTypeIcon(commitType string) string {
-// 	switch commitType {
-// 	case "FIX":
-// 		return "🔧"
-// 	case "ADD":
-// 		return "✨"
-// 	case "UPDATE":
-// 		return "⚡"
-// 	case "REFACTOR":
-// 		return "♻️"
-// 	case "STYLE":
-// 		return "💄"
-// 	case "REMOVE":
-// 		return "🗑️"
-// 	default:
-// 		return "📝"
-// 	}
-// }

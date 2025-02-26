@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"tui-gac/types"
 )
+
 
 // CheckBranch 現在のブランチを取得
 func CheckBranch() (string, error) {
@@ -83,16 +85,36 @@ func WriteBranch(currentDir string, currentBranch string, projectConfig []types.
 }
 
 func SaveProjectConfig(config []types.ProjectInfo) error {
-	file, err := os.Create("branchIssueNum.json")
+	// ホームディレクトリを取得
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("failed to get home directory: %w", err)
+	}
+
+	// 設定ディレクトリのパスを作成
+	configDir := filepath.Join(homeDir, ".config", "gac")
+
+	// ディレクトリが存在しない場合は作成
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return fmt.Errorf("failed to create config directory: %w", err)
+	}
+
+	// JSONファイルのフルパスを作成
+	configPath := filepath.Join(configDir, "branchIssueNum.json")
+
+	// ファイルを作成
+	file, err := os.Create(configPath)
 	if err != nil {
 		return fmt.Errorf("failed to create config file: %w", err)
 	}
 	defer file.Close()
 
+	// JSONエンコーダーを設定して書き込み
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "    ")
 	if err := encoder.Encode(config); err != nil {
 		return fmt.Errorf("failed to encode config: %w", err)
 	}
+
 	return nil
 }
