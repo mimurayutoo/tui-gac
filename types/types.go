@@ -1,5 +1,6 @@
 package types
 
+// json形式で保存されている情報の型
 type BranchIssue struct {
 	BranchName  string `json:"BranchName"`
 	IssueNumber string `json:"IssueNumber"`

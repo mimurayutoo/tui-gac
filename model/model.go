@@ -12,19 +12,19 @@ import (
 type state int
 
 const (
-	GetBranch state = iota
-	InputIssueNum
-	CheckBranchAndIssueNum
-	FixIssueNumber
-	AddAllOrSelect
-	Add
-	AddAll
-	AddSelectedFiles
-	SelectFixOverView
-	InputCommitMessage
-	Commit
-	Push
-	Error
+	GetBranch state = iota // ブランチ名を取得する
+	InputIssueNum // イシュー番号を入力する
+	CheckBranchAndIssueNum // ブランチ名とイシュー番号を確認する
+	FixIssueNumber // イシュー番号を修正する
+	AddAllOrSelect // 全てを追加するか、選択したファイルを追加するかを選択する
+	Add // 選択したファイルを追加する
+	AddAll // 全てを追加する
+	AddSelectedFiles // 選択したファイルを追加する
+	SelectFixOverView // コミットタイプを選択する
+	InputCommitMessage // コミットメッセージを入力する
+	Commit // コミット
+	Push // プッシュ
+	Error // エラーが発生した場合
 )
 
 type CommitType struct {
@@ -33,29 +33,28 @@ type CommitType struct {
 	Desc  string
 }
 
-// それぞれのフィールドを大文字にして外部からのアクセスができるようにして
 type Model struct {
-	Cursor             int
-	ChangedFiles       []string
-	DeletedFiles       []string
-	SelectedFiles      []string
-	CurrentState       state
-	IsDone             bool
-	ProjectConfig      []types.ProjectInfo
-	CurrentBranch      string
-	IssueNum           string // 存在しない場合には""存在している場合には"#111"
-	InputIssueNum      textinput.Model
-	InputCommitMessage textinput.Model
-	IsExistDir         bool
-	IsExistBranch      bool
-	IsExistIssueNum    bool
-	CurrentDir         string
-	FixOverView        []CommitType
-	AddFile            []bool
-	UserIntention      bool
-	StagedFiles        []string
-	CommitMessage      string
-	ErrorMsg           string
+	Cursor             int // カーソルの位置
+	ChangedFiles       []string // 変更されたファイル
+	DeletedFiles       []string // 削除されたファイル
+	SelectedFiles      []string // ステージングするように選択されたファイル
+	CurrentState       state // 現在の状態
+	IsDone             bool // 終了したかどうか
+	ProjectConfig      []types.ProjectInfo // jsonファイルに保存されている情報
+	CurrentBranch      string // 現在のブランチ
+	IssueNum           string // 存在しない場合には""存在している場合には"#~~~"
+	InputIssueNum      textinput.Model // イシュー番号を入力する
+	InputCommitMessage textinput.Model // コミットメッセージを入力する
+	IsExistDir         bool // ディレクトリが存在しているかどうか
+	IsExistBranch      bool // ブランチが存在しているかどうか
+	IsExistIssueNum    bool // イシュー番号が存在しているかどうか
+	CurrentDir         string // 現在のディレクトリ
+	FixOverView        []CommitType // コミットタイプ
+	AddFile            []bool // 追加するファイル
+	UserIntention      bool // ユーザーの意図
+	StagedFiles        []string // ステージングされたファイル
+	CommitMessage      string // コミットメッセージ
+	ErrorMsg           string // エラーメッセージ
 	PreviousState      state // エラー発生前の状態を保存
 }
 
@@ -124,8 +123,8 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 	}
 
 	m.IsExistDir = add.SearchDir(m.ProjectConfig, m.CurrentDir)
+	// プロジェクトが存在していない場合にはディレクトリ追加する。
 	if !m.IsExistDir {
-		// jsonファイルにプロジェクトを追加する関数を実装。参照ではなく、ポインタを渡す。
 		add.WriteDir(m.CurrentDir, &m.ProjectConfig)
 	}
 
@@ -136,13 +135,14 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		m.IssueNum = ""
 		m.IsExistIssueNum = false
 		m.CurrentState = InputIssueNum
-		// jsonファイルに現在のブランチを追加する関数を実装。
+		// jsonファイルに現在のブランチを追加する。
 		updatedConfig, err := add.WriteBranch(m.CurrentDir, m.CurrentBranch, m.ProjectConfig)
 		if err != nil {
 			return m
 		}
 		m.ProjectConfig = updatedConfig
 	} else {
+		// ブランチが存在している場合にはissue番号を取得する。
 		m.IssueNum = add.GetIssueNumber(m.ProjectConfig, m.CurrentDir, m.CurrentBranch)
 	}
 

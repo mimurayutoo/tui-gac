@@ -23,17 +23,14 @@ func main() {
 	}
 	configFile, err := os.Open(filepath.Join(homeDir, ".config", "gac", "branchIssueNum.json"))
 	if err != nil {
-		// ファイルが存在しない場合は空の配列で初期化
 		projectConfig = []types.ProjectInfo{}
 	} else {
 		defer configFile.Close()
-		// jsonファイルを読み込む
 		byteValue, err := io.ReadAll(configFile)
 		if err != nil {
 			return
 		}
 
-		// jsonファイルをパースする
 		if err := json.Unmarshal(byteValue, &projectConfig); err != nil {
 			return
 		}

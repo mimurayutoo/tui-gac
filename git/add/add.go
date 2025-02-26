@@ -5,12 +5,13 @@ import (
 	"os/exec"
 )
 
+// 選択されたファイルを追加する
 func AddSelectedFile(deletedFiles []string, changedFiles []string, addFile []bool) error {
 	if len(addFile) != len(changedFiles) {
 		return fmt.Errorf("addFile slice and changedFiles slice have different lengths")
 	}
 
-	// まずchangedFilesの処理
+	// changedFilesの処理
 	for i, add := range addFile {
 		if add {
 			cmd := exec.Command("git", "add", changedFiles[i])
@@ -21,7 +22,7 @@ func AddSelectedFile(deletedFiles []string, changedFiles []string, addFile []boo
 		}
 	}
 
-	// 次にdeletedFilesの処理
+	// deletedFilesの処理
 	for _, deletedFile := range deletedFiles {
 		cmd := exec.Command("git", "add", deletedFile)
 		_, err := cmd.Output()
@@ -33,6 +34,7 @@ func AddSelectedFile(deletedFiles []string, changedFiles []string, addFile []boo
 	return nil
 }
 
+// 全てのファイルを追加する
 func AddAll(changedFiles []string, deletedFiles []string) error {
 	cmd := exec.Command("git", "add", "-A")
 	if err := cmd.Run(); err != nil {
