@@ -85,12 +85,12 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 			},
 			{
 				Label: "UPDATE",
-				Icon:  "⚡",
+				Icon:  "🚀",
 				Desc:  "Updates and improvements",
 			},
 			{
 				Label: "REFACTOR",
-				Icon:  "♻️",
+				Icon:  "🔄",
 				Desc:  "Code refactoring",
 			},
 			{
