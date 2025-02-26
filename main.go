@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"tui-gac/model"
 	"tui-gac/types"
@@ -16,7 +17,11 @@ var projectConfig []types.ProjectInfo
 
 func main() {
 	// jsonファイルを開く
-	configFile, err := os.Open("branchIssueNum.json")
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return
+	}
+	configFile, err := os.Open(filepath.Join(homeDir, ".config", "gac", "branchIssueNum.json"))
 	if err != nil {
 		// ファイルが存在しない場合は空の配列で初期化
 		projectConfig = []types.ProjectInfo{}

@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-func AddSelectedFile(deletedFiles []string, changedFiles []string, addFile []bool)  error {
+func AddSelectedFile(deletedFiles []string, changedFiles []string, addFile []bool) error {
 	if len(addFile) != len(changedFiles) {
 		return fmt.Errorf("addFile slice and changedFiles slice have different lengths")
 	}

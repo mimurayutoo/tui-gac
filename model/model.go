@@ -75,7 +75,7 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		FixOverView: []CommitType{
 			{
 				Label: "FIX",
-				Icon:  "🔧",
+				Icon:  "🛠️",
 				Desc:  "Bug fixes and patches",
 			},
 			{
@@ -95,13 +95,18 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 			},
 			{
 				Label: "STYLE",
-				Icon:  "💄",
+				Icon:  "🎨",
 				Desc:  "Style and formatting",
 			},
 			{
 				Label: "REMOVE",
 				Icon:  "🗑️",
 				Desc:  "Removing code or files",
+			},
+			{
+				Label: "REVIEW_FIX",
+				Icon:  "📝",
+				Desc:  "Fixes based on code review",
 			},
 		},
 		StagedFiles:   []string{},
@@ -130,6 +135,7 @@ func InitModel(projectConfig []types.ProjectInfo) Model {
 		// ブランチが存在していない場合にはissue番号も存在していない。
 		m.IssueNum = ""
 		m.IsExistIssueNum = false
+		m.CurrentState = InputIssueNum
 		// jsonファイルに現在のブランチを追加する関数を実装。
 		updatedConfig, err := add.WriteBranch(m.CurrentDir, m.CurrentBranch, m.ProjectConfig)
 		if err != nil {

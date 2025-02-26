@@ -15,6 +15,7 @@ func Reset() error {
 	return nil
 }
 
+
 // ResetStaging はステージングされた変更を取り消します
 func ResetStaging() error {
 	cmd := exec.Command("git", "reset")
