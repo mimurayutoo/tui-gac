@@ -1,8 +1,11 @@
 # tui-app-gac
 
 ## 本ツールの概要
-### 対象os
+### 対象
 - mac os
+### 使用スタック
+- go言語
+- bubbletea https://github.com/charmbracelet/bubbletea
 ### 何をするものなのか？
 - gitコマンドを簡単に実行できるようにするツール
 - `git add`,`git commit`, `git push`を自動的に行うことができるようなツール
